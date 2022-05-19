@@ -103,7 +103,8 @@ function fullClearCurrentRegionRoutes()
     setTimeout(() => {
       if (MapHelper.accessToRoute(r.number, player.region)) {
         MapHelper.moveToRoute(r.number, player.region);
-        App.game.statistics.routeKills[player.region][player.route()] += 10_000;
+        kills = App.game.statistics.routeKills[player.region][player.route()]()
+        App.game.statistics.routeKills[player.region][player.route()] = kills + 10_000;
       }
     }, 100)
   })
@@ -134,7 +135,8 @@ function fullClearCurrentRegionDungeons() {
     if (GameConstants.getDungeonRegion(key) == player.region) {
       setTimeout(() => {
         MapHelper.moveToTown(key)
-        App.game.statistics.dungeonsCleared[GameConstants.getDungeonIndex(player.town().name)] += 1000; 
+        clears = App.game.statistics.dungeonsCleared[GameConstants.getDungeonIndex(player.town().name)]()
+        App.game.statistics.dungeonsCleared[GameConstants.getDungeonIndex(player.town().name)] = clears + 1_000;
       }, 100)
 
     }
@@ -151,7 +153,11 @@ function fullClearCurrentRegionGyms()
   currentGyms = []
   Object.entries(GymList).forEach(g => { if (GameConstants.getGymRegion(g[1].town) == player.region) { currentGyms.push(g[1].town)} });
   
-  currentGyms.forEach(g => { App.game.statistics.gymsDefeated[GameConstants.getGymIndex(g)] += 1000});
+  currentGyms.forEach(g => 
+    { 
+      defeats = App.game.statistics.gymsDefeated[GameConstants.getGymIndex(g)]()
+      App.game.statistics.gymsDefeated[GameConstants.getGymIndex(g)] = defeats + 1_000;
+    });
 }
 
 
@@ -232,11 +238,11 @@ function run() {
     document.body.removeChild(fullClearRegionDungeonsButton);
     document.body.removeChild(fullClearRegionGymsButton);
 
-    document.body.removeChild(catchAllRegionPokemons);
-    document.body.removeChild(catchAllRegionShinies);
+    document.body.removeChild(catchAllRegionPokemonsButton);
+    document.body.removeChild(catchAllRegionShiniesButton);
 
-    document.body.removeChild(catchAllPokemons);
-    document.body.removeChild(catchAllShinies);
+    document.body.removeChild(catchAllPokemonsButton);
+    document.body.removeChild(catchAllShiniesButton);
 
     document.body.removeChild(clearButton);
   };
@@ -680,7 +686,7 @@ function run() {
 
   let fullClearRegionGymsButton = document.createElement("button");
   fullClearRegionGymsButton.onclick = function () {
-    powerUpPokemons(1000);
+    fullClearCurrentRegionGyms();
 
     Notifier.notify({
       message: `Full cleared current region gyms`,
@@ -695,8 +701,8 @@ function run() {
   document.body.appendChild(fullClearRegionGymsButton);
 
   //Region pokemons
-  let catchAllRegionPokemons = document.createElement("button");
-  catchAllRegionPokemons.onclick = function () {
+  let catchAllRegionPokemonsButton = document.createElement("button");
+  catchAllRegionPokemonsButton.onclick = function () {
     catchAllRegionPokemons();
 
     Notifier.notify({
@@ -705,15 +711,15 @@ function run() {
     });
   };
 
-  catchAllRegionPokemons.innerHTML = `Catch all region <img src=\"https://www.pokeclicker.com/assets/images/pokeball/Pokeball.svg\" height=\"25\">`;
-  catchAllRegionPokemons.style.position = "absolute";
-  catchAllRegionPokemons.style.left = "2%";
-  catchAllRegionPokemons.style.top = "85%";
-  document.body.appendChild(catchAllRegionPokemons);
+  catchAllRegionPokemonsButton.innerHTML = `Catch all region <img src=\"https://www.pokeclicker.com/assets/images/pokeball/Pokeball.svg\" height=\"25\">`;
+  catchAllRegionPokemonsButton.style.position = "absolute";
+  catchAllRegionPokemonsButton.style.left = "2%";
+  catchAllRegionPokemonsButton.style.top = "85%";
+  document.body.appendChild(catchAllRegionPokemonsButton);
 
-  let catchAllRegionShinies = document.createElement("button");
-  catchAllRegionShinies.onclick = function () {
-    catchAllRegionPokemons();
+  let catchAllRegionShiniesButton = document.createElement("button");
+  catchAllRegionShiniesButton.onclick = function () {
+    catchAllRegionPokemons(true);
 
     Notifier.notify({
       message: `Caught all current region pokemons`,
@@ -721,15 +727,31 @@ function run() {
     });
   };
 
-  catchAllRegionShinies.innerHTML = `Catch all region ✨`;
-  catchAllRegionShinies.style.position = "absolute";
-  catchAllRegionShinies.style.left = "10%";
-  catchAllRegionShinies.style.top = "85%";
-  document.body.appendChild(catchAllRegionShinies);
+  catchAllRegionShiniesButton.innerHTML = `Catch all region ✨`;
+  catchAllRegionShiniesButton.style.position = "absolute";
+  catchAllRegionShiniesButton.style.left = "10%";
+  catchAllRegionShiniesButton.style.top = "85%";
+  document.body.appendChild(catchAllRegionShiniesButton);
 
   //All pokemons
-  let catchAllPokemons = document.createElement("button");
-  catchAllPokemons.onclick = function () {
+  let catchAllPokemonsButton = document.createElement("button");
+  catchAllPokemonsButton.onclick = function () {
+    catchAllPokemons(true)
+
+    Notifier.notify({
+      message: `Caught all pokemons`,
+      type: NotificationConstants.NotificationOption.success,
+    });
+  };
+
+  catchAllPokemonsButton.innerHTML = `Catch all <img src=\"https://www.pokeclicker.com/assets/images/pokeball/Pokeball.svg\" height=\"25\">`;
+  catchAllPokemonsButton.style.position = "absolute";
+  catchAllPokemonsButton.style.left = "2%";
+  catchAllPokemonsButton.style.top = "90%";
+  document.body.appendChild(catchAllPokemonsButton);
+
+  let catchAllShiniesButton = document.createElement("button");
+  catchAllShiniesButton.onclick = function () {
     catchAllPokemons()
 
     Notifier.notify({
@@ -738,26 +760,10 @@ function run() {
     });
   };
 
-  catchAllPokemons.innerHTML = `Catch all <img src=\"https://www.pokeclicker.com/assets/images/pokeball/Pokeball.svg\" height=\"25\">`;
-  catchAllPokemons.style.position = "absolute";
-  catchAllPokemons.style.left = "2%";
-  catchAllPokemons.style.top = "90%";
-  document.body.appendChild(catchAllPokemons);
-
-  let catchAllShinies = document.createElement("button");
-  catchAllShinies.onclick = function () {
-    catchAllPokemons()
-
-    Notifier.notify({
-      message: `Caught all pokemons`,
-      type: NotificationConstants.NotificationOption.success,
-    });
-  };
-
-  catchAllShinies.innerHTML = `Catch all ✨`;
-  catchAllShinies.style.position = "absolute";
-  catchAllShinies.style.left = "10%";
-  catchAllShinies.style.top = "90%";
-  document.body.appendChild(catchAllShinies);
+  catchAllShiniesButton.innerHTML = `Catch all ✨`;
+  catchAllShiniesButton.style.position = "absolute";
+  catchAllShiniesButton.style.left = "10%";
+  catchAllShiniesButton.style.top = "90%";
+  document.body.appendChild(catchAllShiniesButton);
 
 }
