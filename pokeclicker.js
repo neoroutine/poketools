@@ -736,7 +736,7 @@ function run() {
   //All pokemons
   let catchAllPokemonsButton = document.createElement("button");
   catchAllPokemonsButton.onclick = function () {
-    catchAllPokemons(true)
+    catchAllPokemons()
 
     Notifier.notify({
       message: `Caught all pokemons`,
@@ -752,7 +752,7 @@ function run() {
 
   let catchAllShiniesButton = document.createElement("button");
   catchAllShiniesButton.onclick = function () {
-    catchAllPokemons()
+    catchAllPokemons(true)
 
     Notifier.notify({
       message: `Caught all pokemons`,
