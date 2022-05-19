@@ -12,4 +12,5 @@
 - Copy pokeclicker.js' content into your browser's developer console
 - Type `run()` and you're good to go
 
+<img src="images/run.png">
 
